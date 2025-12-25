@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Highspeed Minesweeper</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <div class="header">
+            <div id="timer-box">TIME: <span id="timer">0.000</span></div>
+        </div>
+
+        <div id="game-area">
+            <div id="game-board" class="board"></div>
+
+            <div id="menu-overlay" class="overlay">
+                <h1>Highspeed Minesweeper</h1>
+
+                <div class="menu-section" id="menu-single">
+                    <h2>SINGLE MODE</h2>
+                    <button class="btn single-btn">START</button>
+                </div>
+
+                <div class="menu-section" id="menu-streak">
+                    <h2>STREAK MODE</h2>
+                    <div class="btn-group">
+                        <button class="btn streak-btn">5 Streaks</button>
+                        <button class="btn streak-btn">10 Streaks</button>
+                        <button class="btn streak-btn">20 Streaks</button>
+                        <button class="btn streak-btn">50 Streaks</button>
+                        <button class="btn streak-btn">100 Streaks</button>
+                    </div>
+                </div>
+
+                <div class="menu-section" id="menu-infinite">
+                    <h2>INFINITE MODE</h2>
+                    <div class="btn-group">
+                        <button class="btn infinite-btn">EASY (120s)</button>
+                        <button class="btn infinite-btn">NORMAL (100s)</button>
+                        <button class="btn infinite-btn">HARD (80s)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="msg-overlay" class="overlay hidden">
+                <div id="msg-text">PRESS SPACE</div>
+                <div id="sub-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>

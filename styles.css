@@ -1,0 +1,314 @@
+:root {
+    /* サイズ設定（ここを変えるだけで全体の大きさを調整可能） */
+    --cell-size: 55px;
+    --font-size-cell: 32px;
+    --font-size-label: 24px;
+
+    /* 色設定 */
+    --bg-body: #1a1a1a;
+    --bg-board: #000;
+    --bg-cell: #e0e0e0;
+    --bg-label: #444;
+    --text-main: #fff;
+    --text-cell: #000;
+    --color-highlight: #89c4ff;
+    /* ハイライト色を明るい水色に */
+    --color-open-highlight: #6fa8dc;
+    --color-bomb: #d32f2f;
+}
+
+body {
+    /* ゴシック体指定 */
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    font-weight: 800;
+    /* 極太 */
+    padding: 20px;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 垂直方向も中央揃え */
+    height: 100vh;
+    overflow: hidden;
+    /* スクロール防止 */
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: center;
+}
+
+/* ヘッダー情報 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: calc(var(--cell-size) * 10);
+    margin-bottom: 15px;
+    font-size: 24px;
+    /* ヘッダー文字サイズ拡大 */
+    letter-spacing: 1px;
+}
+
+#timer-box {
+    font-size: 36px;
+    /* タイマー特大 */
+    font-family: 'Courier New', monospace;
+    /* 数字の揺れを防ぐためタイマーだけ等幅 */
+    min-width: 180px;
+    text-align: center;
+}
+
+#timer {
+    color: #00ff00;
+}
+
+.danger #timer {
+    color: #ff0000;
+}
+
+#info-left,
+#info-right {
+    display: flex;
+    align-items: center;
+}
+
+/* 盤面エリア */
+#game-area {
+    position: relative;
+    border: 4px solid #555;
+    background-color: #333;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.board {
+    display: grid;
+    /* 1列目(見出し) + 9列 + 1列目(右側見出し) */
+    grid-template-columns: var(--cell-size) repeat(9, var(--cell-size)) var(--cell-size);
+    grid-template-rows: var(--cell-size) repeat(9, var(--cell-size)) var(--cell-size);
+    gap: 2px;
+    background-color: var(--bg-board);
+}
+
+/* セル共通 */
+.cell,
+.label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    user-select: none;
+    transition: background-color 0.05s;
+}
+
+/* ガイド（行・列の見出し） */
+.label {
+    background-color: var(--bg-label);
+    color: #ccc;
+    font-size: var(--font-size-label);
+    font-weight: bold;
+}
+
+/* 通常マス */
+.cell {
+    background-color: var(--bg-cell);
+    font-size: var(--font-size-cell);
+    color: var(--text-cell);
+    font-weight: 900;
+    /* 数字を太く */
+}
+
+/* 状態変化 */
+.cell.open {
+    background-color: #bbb;
+}
+
+.cell.highlight {
+    background-color: var(--color-highlight);
+}
+
+.cell.open.highlight {
+    background-color: var(--color-open-highlight);
+}
+
+/* 爆弾 */
+.cell.bomb {
+    background-color: var(--color-bomb);
+    color: white;
+}
+
+/* 数字ごとの色（視認性重視） */
+.cell[data-val="1"] {
+    color: #0000ff;
+}
+
+.cell[data-val="2"] {
+    color: #008000;
+}
+
+.cell[data-val="3"] {
+    color: #d00000;
+}
+
+.cell[data-val="4"] {
+    color: #000080;
+}
+
+.cell[data-val="5"] {
+    color: #800000;
+}
+
+.cell[data-val="6"] {
+    color: #008080;
+}
+
+.cell[data-val="7"] {
+    color: #000000;
+}
+
+.cell[data-val="8"] {
+    color: #808080;
+}
+
+/* オーバーレイ（メニュー・結果） */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.92);
+    /* 背景を濃くして文字を見やすく */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.hidden {
+    display: none;
+}
+
+h1 {
+    margin: 0 0 30px 0;
+    font-size: 42px;
+    /* タイトル拡大 */
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.menu-section {
+    margin-bottom: 30px;
+    text-align: center;
+    display: none;
+}
+
+.menu-section.selected {
+    display: block;
+}
+
+h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    color: #aaa;
+}
+
+.btn {
+    background: #444;
+    color: #fff;
+    border: 2px solid #888;
+    padding: 10px 25px;
+    /* ボタンサイズ拡大 */
+    margin: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 20px;
+    /* ボタン文字拡大 */
+    font-weight: bold;
+    border-radius: 4px;
+    transition: all 0.1s;
+}
+
+.btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.menu-section.selected h2 {
+    color: #fff;
+}
+
+.btn.selected {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 結果表示テキスト */
+#msg-text {
+    font-size: 60px;
+    /* 結果文字特大 */
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#sub-msg {
+    font-size: 28px;
+    color: #ddd;
+}
+
+/* エフェクト */
+@keyframes flash-red {
+    0% {
+        background-color: rgba(255, 0, 0, 0.6);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes flash-green {
+    0% {
+        background-color: rgba(0, 255, 0, 0.4);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.flash-red::after,
+.flash-green::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.flash-red::after {
+    animation: flash-red 0.2s ease-out;
+}
+
+.flash-green::after {
+    animation: flash-green 0.2s ease-out;
+}
