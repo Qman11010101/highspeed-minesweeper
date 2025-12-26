@@ -15,6 +15,7 @@
         <div class="header">
             <div id="timer-box"><span id="timer">00:00.000</span></div>
             <div id="streak-display"></div>
+            <div id="cleared-display"></div>
         </div>
 
         <div id="game-area">
@@ -25,19 +26,29 @@
 
                 <div class="menu-section" id="menu-single">
                     <h2>SINGLE MODE</h2>
-                    <button class="btn single-btn">START</button>
+                    <button class="btn single-btn" onclick="startGame('single', null)">START</button>
                 </div>
 
                 <div class="menu-section" id="menu-streak">
                     <h2>STREAK MODE</h2>
                     <div class="btn-group">
-                        <button class="btn streak-btn">3 Streaks</button>
-                        <button class="btn streak-btn">5 Streaks</button>
-                        <button class="btn streak-btn">10 Streaks</button>
-                        <button class="btn streak-btn">20 Streaks</button>
-                        <button class="btn streak-btn">30 Streaks</button>
-                        <button class="btn streak-btn">50 Streaks</button>
-                        <button class="btn streak-btn">100 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 3)">3 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 5)">5 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 10)">10 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 20)">20 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 30)">30 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 50)">50 Streaks</button>
+                        <button class="btn streak-btn" onclick="startGame('streak', 100)">100 Streaks</button>
+                    </div>
+                </div>
+
+                <div class="menu-section" id="menu-infinite">
+                    <h2>INFINITE MODE</h2>
+                    <div class="btn-group">
+                        <button class="btn infinite-btn" onclick="startGame('infinite', 'easy')">Easy</button>
+                        <button class="btn infinite-btn" onclick="startGame('infinite', 'normal')">Normal</button>
+                        <button class="btn infinite-btn" onclick="startGame('infinite', 'hard')">Hard</button>
+                        <button class="btn infinite-btn" onclick="startGame('infinite', 'expert')">Expert</button>
                     </div>
                 </div>
             </div>
