@@ -270,9 +270,11 @@ function gameLoop() {
     const now = Date.now();
 
     if (gameData.mode === 'infinite') {
-        // カウントダウン
         gameData.remainingTime -= 0.01; // 10ms減
         if (gameData.remainingTime <= 0) {
+            gameData.remainingTime = 0;
+            timerEl.textContent = `00:00.000`;
+            timerEl.style.color = '#ff0000';
             gameOver(false);
             return;
         }
