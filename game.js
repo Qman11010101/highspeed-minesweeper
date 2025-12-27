@@ -273,6 +273,8 @@ function gameLoop() {
         // カウントダウン
         gameData.remainingTime -= 0.01; // 10ms減
         if (gameData.remainingTime <= 0) {
+            gameData.remainingTime = 0;
+            timerEl.textContent = '00:00.000';
             gameOver(false);
             return;
         }
