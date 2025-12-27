@@ -19,6 +19,7 @@ let activeRight = new Set();
 let timerInterval = null;
 let countdownInterval = null;
 let isFirstMove = true;
+let boardId = 0;
 
 // メニュー選択状態
 let menuModeIndex = 0;
@@ -246,6 +247,7 @@ function startSession() {
 // 新しい盤面の準備（Streak/Infiniteで使い回す）
 function resetBoard() {
     isFirstMove = true;
+    boardId++;
     grid.forEach(row => row.forEach(c => {
         c.isBomb = false;
         c.isOpen = false;
@@ -467,6 +469,7 @@ function generateBoard(safeR, safeC) {
 }
 
 function openCell(r, c) {
+    const currentBoardId = boardId;
     const cell = grid[r][c];
     if (cell.isOpen) return;
 
@@ -485,11 +488,15 @@ function openCell(r, c) {
     } else {
         for (let dr = -1; dr <= 1; dr++) {
             for (let dc = -1; dc <= 1; dc++) {
+                // ボードがリセットされたら再帰を中断
+                if (boardId !== currentBoardId) return;
                 const nr = r + dr, nc = c + dc;
                 if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) openCell(nr, nc);
             }
         }
     }
+    // ボードがリセットされたらクリア判定もしない
+    if (boardId !== currentBoardId) return;
     checkBoardClear();
 }
 
