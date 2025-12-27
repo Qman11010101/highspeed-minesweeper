@@ -2,8 +2,8 @@
 const ROWS = 9;
 const COLS = 9;
 const BOMB_COUNT = 10;
-const LEFT_CHARS = ['W', 'E', 'R', 'S', 'D', 'F', 'X', 'C', 'V'];
-const RIGHT_CHARS = ['U', 'I', 'O', 'J', 'K', 'L', 'M', ',', '.'];
+const LEFT_CHARS = ["W", "E", "R", "S", "D", "F", "X", "C", "V"];
+const RIGHT_CHARS = ["U", "I", "O", "J", "K", "L", "M", ",", "."];
 
 // キーマッピング生成
 const LEFT_KEYS = {};
@@ -13,7 +13,7 @@ RIGHT_CHARS.forEach((char, i) => RIGHT_KEYS[char.toLowerCase()] = i);
 
 // --- グローバル状態 ---
 let grid = [];
-let gameState = 'menu'; // menu, countdown, playing, ended
+let gameState = "menu"; // menu, countdown, playing, ended
 let activeLeft = new Set();
 let activeRight = new Set();
 let timerInterval = null;
@@ -25,14 +25,14 @@ let boardId = 0;
 let menuModeIndex = 0;
 let menuSubIndex = 0;
 const menuOptions = [
-    { mode: 'single', subs: [null], sectionId: 'menu-single', btnClass: 'single-btn' },
-    { mode: 'streak', subs: [3, 5, 10, 20, 30, 50, 100], sectionId: 'menu-streak', btnClass: 'streak-btn' },
-    { mode: 'infinite', subs: ['easy', 'normal', 'hard', 'expert'], sectionId: 'menu-infinite', btnClass: 'infinite-btn' }
+    { mode: "single", subs: [null], sectionId: "menu-single", btnClass: "single-btn" },
+    { mode: "streak", subs: [3, 5, 10, 20, 30, 50, 100], sectionId: "menu-streak", btnClass: "streak-btn" },
+    { mode: "infinite", subs: ["easy", "normal", "hard", "expert"], sectionId: "menu-infinite", btnClass: "infinite-btn" }
 ];
 
 // ゲーム進行データ
 let gameData = {
-    mode: 'single',     // single, streak, infinite
+    mode: "single",     // single, streak, infinite
     param: null,        // モードのパラメータ
     startTime: 0,       // 開始時刻 (Single/Streak用)
     remainingTime: 0,   // 残り時間 (Infinite用)
@@ -43,15 +43,15 @@ let gameData = {
 };
 
 // DOM要素
-const boardEl = document.getElementById('game-board');
-const timerEl = document.getElementById('timer');
-const streakDisplayEl = document.getElementById('streak-display');
-const clearedDisplayEl = document.getElementById('cleared-display');
-const menuOverlay = document.getElementById('menu-overlay');
-const msgOverlay = document.getElementById('msg-overlay');
-const msgText = document.getElementById('msg-text');
-const subMsg = document.getElementById('sub-msg');
-const gameArea = document.getElementById('game-area'); // フラッシュ演出用
+const boardEl = document.getElementById("game-board");
+const timerEl = document.getElementById("timer");
+const streakDisplayEl = document.getElementById("streak-display");
+const clearedDisplayEl = document.getElementById("cleared-display");
+const menuOverlay = document.getElementById("menu-overlay");
+const msgOverlay = document.getElementById("msg-overlay");
+const msgText = document.getElementById("msg-text");
+const subMsg = document.getElementById("sub-msg");
+const gameArea = document.getElementById("game-area"); // フラッシュ演出用
 
 // --- 初期化 ---
 function init() {
@@ -63,62 +63,62 @@ function init() {
 
 function updateMenuSelection() {
     // 全てのselectedを削除
-    document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll(".selected").forEach(el => el.classList.remove("selected"));
     // 現在のモードのセクションにselected
     const currentMode = menuOptions[menuModeIndex];
-    document.getElementById(currentMode.sectionId).classList.add('selected');
+    document.getElementById(currentMode.sectionId).classList.add("selected");
     // サブ選択がある場合、ボタンにselected
     if (currentMode.btnClass) {
         const btns = document.querySelectorAll(`.${currentMode.btnClass}`);
-        if (btns[menuSubIndex]) btns[menuSubIndex].classList.add('selected');
+        if (btns[menuSubIndex]) btns[menuSubIndex].classList.add("selected");
     }
 }
 
 function updateStreakDisplay() {
-    if (gameData.mode === 'streak') {
+    if (gameData.mode === "streak") {
         streakDisplayEl.textContent = `STREAK ${gameData.panelsCleared} / ${gameData.targetPanels}`;
-        streakDisplayEl.style.display = 'block';
-        clearedDisplayEl.style.display = 'none';
-    } else if (gameData.mode === 'infinite') {
+        streakDisplayEl.style.display = "block";
+        clearedDisplayEl.style.display = "none";
+    } else if (gameData.mode === "infinite") {
         clearedDisplayEl.textContent = `CLEARED: ${gameData.panelsCleared}`;
-        clearedDisplayEl.style.display = 'block';
-        streakDisplayEl.style.display = 'none';
+        clearedDisplayEl.style.display = "block";
+        streakDisplayEl.style.display = "none";
     } else {
-        streakDisplayEl.style.display = 'none';
-        clearedDisplayEl.style.display = 'none';
+        streakDisplayEl.style.display = "none";
+        clearedDisplayEl.style.display = "none";
     }
 }
 
 // 盤面DOM生成（初期1回と、中身のクリアに使用）
 function createGridDOM() {
-    boardEl.innerHTML = '';
+    boardEl.innerHTML = "";
     grid = [];
 
     // ヘッダー行
-    const cornerTopLeft = document.createElement('div');
-    cornerTopLeft.className = 'label';
+    const cornerTopLeft = document.createElement("div");
+    cornerTopLeft.className = "label";
     boardEl.appendChild(cornerTopLeft);
     for (let c = 0; c < COLS; c++) {
-        const label = document.createElement('div');
-        label.className = 'label';
+        const label = document.createElement("div");
+        label.className = "label";
         label.textContent = RIGHT_CHARS[c];
         boardEl.appendChild(label);
     }
-    const cornerTopRight = document.createElement('div');
-    cornerTopRight.className = 'label';
+    const cornerTopRight = document.createElement("div");
+    cornerTopRight.className = "label";
     boardEl.appendChild(cornerTopRight);
 
     // 各行
     for (let r = 0; r < ROWS; r++) {
         let rowData = [];
-        const labelLeft = document.createElement('div');
-        labelLeft.className = 'label';
+        const labelLeft = document.createElement("div");
+        labelLeft.className = "label";
         labelLeft.textContent = LEFT_CHARS[r];
         boardEl.appendChild(labelLeft);
 
         for (let c = 0; c < COLS; c++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
             cell.dataset.row = r;
             cell.dataset.col = c;
             boardEl.appendChild(cell);
@@ -131,44 +131,44 @@ function createGridDOM() {
                 element: cell
             });
         }
-        const labelRight = document.createElement('div');
-        labelRight.className = 'label';
+        const labelRight = document.createElement("div");
+        labelRight.className = "label";
         labelRight.textContent = LEFT_CHARS[r];
         boardEl.appendChild(labelRight);
         grid.push(rowData);
     }
 
     // 下側行
-    const cornerBottomLeft = document.createElement('div');
-    cornerBottomLeft.className = 'label';
+    const cornerBottomLeft = document.createElement("div");
+    cornerBottomLeft.className = "label";
     boardEl.appendChild(cornerBottomLeft);
     for (let c = 0; c < COLS; c++) {
-        const label = document.createElement('div');
-        label.className = 'label';
+        const label = document.createElement("div");
+        label.className = "label";
         label.textContent = RIGHT_CHARS[c];
         boardEl.appendChild(label);
     }
-    const cornerBottomRight = document.createElement('div');
-    cornerBottomRight.className = 'label';
+    const cornerBottomRight = document.createElement("div");
+    cornerBottomRight.className = "label";
     boardEl.appendChild(cornerBottomRight);
 }
 
 function getBonusTime(difficulty) {
     switch (difficulty) {
-        case 'easy': return 40;
-        case 'normal': return 30;
-        case 'hard': return 20;
-        case 'expert': return 10;
+        case "easy": return 40;
+        case "normal": return 30;
+        case "hard": return 20;
+        case "expert": return 10;
         default: return 40;
     }
 }
 
 function getInitialTime(difficulty) {
     switch (difficulty) {
-        case 'easy': return 120; // 2:00
-        case 'normal': return 100; // 1:40
-        case 'hard': return 80; // 1:20
-        case 'expert': return 60; // 1:00
+        case "easy": return 120; // 2:00
+        case "normal": return 100; // 1:40
+        case "hard": return 80; // 1:20
+        case "expert": return 60; // 1:00
         default: return 120;
     }
 }
@@ -181,25 +181,25 @@ window.startGame = function (mode, param) {
     gameData.panelsCleared = 0;
 
     // モード別初期設定
-    if (mode === 'single') {
+    if (mode === "single") {
         gameData.targetPanels = 1;
-    } else if (mode === 'streak') {
+    } else if (mode === "streak") {
         gameData.targetPanels = param;
-    } else if (mode === 'infinite') {
+    } else if (mode === "infinite") {
         gameData.remainingTime = getInitialTime(param);
         gameData.panelsCleared = 0;
     }
 
     // 初期状態に戻す
     resetBoard();
-    timerEl.textContent = '00:00.000';
-    timerEl.style.color = '#00ff00';
+    timerEl.textContent = "00:00.000";
+    timerEl.style.color = "#00ff00";
 
     updateStreakDisplay();
 
-    gameState = 'countdown';
-    menuOverlay.classList.add('hidden');
-    msgOverlay.classList.remove('hidden');
+    gameState = "countdown";
+    menuOverlay.classList.add("hidden");
+    msgOverlay.classList.remove("hidden");
 
     startCountdown();
 };
@@ -211,10 +211,10 @@ function startCountdown() {
     subMsg.textContent = "READY...";
 
     // Infinite Modeの場合、タイマーを初期時間に設定
-    if (gameData.mode === 'infinite') {
+    if (gameData.mode === "infinite") {
         const minutes = Math.floor(gameData.remainingTime / 60);
         const seconds = gameData.remainingTime % 60;
-        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
+        timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toFixed(3).padStart(6, "0")}`;
     }
 
     countdownInterval = setInterval(() => {
@@ -224,9 +224,9 @@ function startCountdown() {
         } else {
             clearInterval(countdownInterval);
             countdownInterval = null;
-            msgText.textContent = 'GO!';
+            msgText.textContent = "GO!";
             setTimeout(() => {
-                msgOverlay.classList.add('hidden');
+                msgOverlay.classList.add("hidden");
                 startSession();
             }, 200);
         }
@@ -234,7 +234,7 @@ function startCountdown() {
 }
 
 function startSession() {
-    gameState = 'playing';
+    gameState = "playing";
     countdownInterval = null;
     gameData.startTime = Date.now();
     resetBoard();
@@ -251,60 +251,60 @@ function resetBoard() {
         c.isBomb = false;
         c.isOpen = false;
         c.value = 0;
-        c.element.className = 'cell';
-        c.element.textContent = '';
+        c.element.className = "cell";
+        c.element.textContent = "";
 
         // ハイライト状態の復元（キー押しっぱなし対応）
         if (activeLeft.has(c.r) || activeRight.has(c.c)) {
-            c.element.classList.add('highlight');
+            c.element.classList.add("highlight");
         }
     }));
     // タイマーの色をリセット
-    timerEl.style.color = '#00ff00';
+    timerEl.style.color = "#00ff00";
 }
 
 // --- メインループ ---
 function gameLoop() {
-    if (gameState !== 'playing' && !(gameState === 'waiting' && (gameData.mode === 'streak' || gameData.mode === 'infinite'))) return;
+    if (gameState !== "playing" && !(gameState === "waiting" && (gameData.mode === "streak" || gameData.mode === "infinite"))) return;
 
     const now = Date.now();
 
-    if (gameData.mode === 'infinite') {
+    if (gameData.mode === "infinite") {
         gameData.remainingTime -= 0.01; // 10ms減
         if (gameData.remainingTime <= 0) {
             gameData.remainingTime = 0;
             timerEl.textContent = `00:00.000`;
-            timerEl.style.color = '#ff0000';
+            timerEl.style.color = "#ff0000";
             gameOver(false);
             return;
         }
         const minutes = Math.floor(gameData.remainingTime / 60);
         const seconds = gameData.remainingTime % 60;
-        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
+        timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toFixed(3).padStart(6, "0")}`;
         // タイマーの色設定
-        if (gameState === 'waiting') {
-            timerEl.style.color = '#ff0000';
+        if (gameState === "waiting") {
+            timerEl.style.color = "#ff0000";
         } else if (gameData.remainingTime < 10) {
-            timerEl.style.color = '#ff0000';
+            timerEl.style.color = "#ff0000";
         } else {
-            timerEl.style.color = '#00ff00';
+            timerEl.style.color = "#00ff00";
         }
     } else {
         // カウントアップ (Single / Streak)
         const diff = (now - gameData.startTime) / 1000;
         const minutes = Math.floor(diff / 60);
         const seconds = diff % 60;
-        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
+        timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toFixed(3).padStart(6, "0")}`;
     }
 }
 
 // --- 入力処理 ---
 function setupInput() {
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Escape') {
+    document.addEventListener("keydown", (e) => {
+        if (e.code === "Escape") {
             e.preventDefault();
             // すべての状態をリセット
-            gameState = 'menu';
+            gameState = "menu";
             clearInterval(timerInterval);
             timerInterval = null;
             clearInterval(countdownInterval);
@@ -313,7 +313,7 @@ function setupInput() {
             activeRight.clear();
             isFirstMove = true;
             gameData = {
-                mode: 'single',
+                mode: "single",
                 param: null,
                 startTime: 0,
                 remainingTime: 0,
@@ -321,59 +321,59 @@ function setupInput() {
                 targetPanels: 0,
                 mistakes: 0,
             };
-            timerEl.textContent = '00:00.000';
-            timerEl.style.color = '#00ff00';
-            msgOverlay.classList.add('hidden');
-            menuOverlay.classList.remove('hidden');
-            document.body.classList.remove('danger');
+            timerEl.textContent = "00:00.000";
+            timerEl.style.color = "#00ff00";
+            msgOverlay.classList.add("hidden");
+            menuOverlay.classList.remove("hidden");
+            document.body.classList.remove("danger");
             createGridDOM();
             updateMenuSelection();
             updateStreakDisplay();
             return;
         }
 
-        if (gameState === 'menu') {
-            if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'Space') {
+        if (gameState === "menu") {
+            if (e.code === "ArrowLeft" || e.code === "ArrowRight" || e.code === "ArrowUp" || e.code === "ArrowDown" || e.code === "Space") {
                 e.preventDefault();
             }
-            if (e.code === 'ArrowLeft') {
+            if (e.code === "ArrowLeft") {
                 menuModeIndex = (menuModeIndex - 1 + menuOptions.length) % menuOptions.length;
                 menuSubIndex = 0; // リセット
                 updateMenuSelection();
-            } else if (e.code === 'ArrowRight') {
+            } else if (e.code === "ArrowRight") {
                 menuModeIndex = (menuModeIndex + 1) % menuOptions.length;
                 menuSubIndex = 0; // リセット
                 updateMenuSelection();
-            } else if (e.code === 'ArrowUp') {
+            } else if (e.code === "ArrowUp") {
                 const currentMode = menuOptions[menuModeIndex];
                 if (currentMode.subs.length > 1) {
                     menuSubIndex = (menuSubIndex - 1 + currentMode.subs.length) % currentMode.subs.length;
                     updateMenuSelection();
                 }
-            } else if (e.code === 'ArrowDown') {
+            } else if (e.code === "ArrowDown") {
                 const currentMode = menuOptions[menuModeIndex];
                 if (currentMode.subs.length > 1) {
                     menuSubIndex = (menuSubIndex + 1) % currentMode.subs.length;
                     updateMenuSelection();
                 }
-            } else if (e.code === 'Space') {
+            } else if (e.code === "Space") {
                 const currentMode = menuOptions[menuModeIndex];
                 startGame(currentMode.mode, currentMode.subs[menuSubIndex]);
             }
             return;
         }
 
-        if (e.code === 'Space') {
+        if (e.code === "Space") {
             e.preventDefault();
             // ゲームオーバー/クリア後のリトライ
-            if (gameState === 'ended') {
-                msgOverlay.classList.add('hidden');
+            if (gameState === "ended") {
+                msgOverlay.classList.add("hidden");
                 startGame(gameData.mode, gameData.param);
             }
             return;
         }
 
-        if (gameState !== 'playing') return;
+        if (gameState !== "playing") return;
         if (e.repeat) return;
 
         const key = e.key.toLowerCase();
@@ -392,7 +392,7 @@ function setupInput() {
         }
     });
 
-    document.addEventListener('keyup', (e) => {
+    document.addEventListener("keyup", (e) => {
         const key = e.key.toLowerCase();
         if (key in LEFT_KEYS) {
             const r = LEFT_KEYS[key];
@@ -418,13 +418,13 @@ function highlightCol(c, on) {
 function updateHighlight(r, c) {
     const el = grid[r][c].element;
     const on = activeLeft.has(r) || activeRight.has(c);
-    if (on) el.classList.add('highlight');
-    else el.classList.remove('highlight');
+    if (on) el.classList.add("highlight");
+    else el.classList.remove("highlight");
 }
 
 // --- ロジック ---
 function attemptOpen(r, c) {
-    if (gameState !== 'playing') return;
+    if (gameState !== "playing") return;
     const cell = grid[r][c];
     if (cell.isOpen) return;
 
@@ -474,11 +474,11 @@ function openCell(r, c) {
     if (cell.isOpen) return;
 
     cell.isOpen = true;
-    cell.element.classList.add('open');
+    cell.element.classList.add("open");
     updateHighlight(r, c);
 
     if (cell.isBomb) {
-        cell.element.classList.add('bomb');
+        cell.element.classList.add("bomb");
         handleMistake();
         return;
     }
@@ -505,7 +505,7 @@ function handleMistake() {
     gameData.mistakes++;
 
     // Single Mode: 即ゲームオーバー
-    if (gameData.mode === 'single') {
+    if (gameData.mode === "single") {
         gameOver(false);
         return;
     }
@@ -513,41 +513,41 @@ function handleMistake() {
     // Streak / Infinite Mode: ペナルティ
 
     // 赤フラッシュ演出
-    triggerFlash('flash-red');
+    triggerFlash("flash-red");
 
     // ペナルティ計算
-    if (gameData.mode === 'streak') {
+    if (gameData.mode === "streak") {
         // 時間加算ペナルティ (内部開始時間をずらして現在時間を増やす)
         gameData.startTime -= 3000;
         // 地雷を表示
         grid.forEach(row => row.forEach(c => {
             if (c.isBomb) {
-                c.element.textContent = 'X';
-                c.element.classList.add('bomb');
+                c.element.textContent = "X";
+                c.element.classList.add("bomb");
             }
         }));
         // タイマーを赤く
-        timerEl.style.color = '#ff0000';
+        timerEl.style.color = "#ff0000";
         // 2秒待機してからリセット
-        gameState = 'waiting';
+        gameState = "waiting";
         setTimeout(() => {
-            gameState = 'playing';
+            gameState = "playing";
             resetBoard();
         }, 2000);
-    } else if (gameData.mode === 'infinite') {
+    } else if (gameData.mode === "infinite") {
         // 地雷を表示
         grid.forEach(row => row.forEach(c => {
             if (c.isBomb) {
-                c.element.textContent = 'X';
-                c.element.classList.add('bomb');
+                c.element.textContent = "X";
+                c.element.classList.add("bomb");
             }
         }));
         // タイマーを赤く
-        timerEl.style.color = '#ff0000';
+        timerEl.style.color = "#ff0000";
         // 2秒待機してからリセット
-        gameState = 'waiting';
+        gameState = "waiting";
         setTimeout(() => {
-            gameState = 'playing';
+            gameState = "playing";
             resetBoard();
         }, 2000);
     }
@@ -566,16 +566,16 @@ function checkBoardClear() {
 function handleBoardClear() {
     gameData.panelsCleared++;
     updateStreakDisplay();
-    triggerFlash('flash-green');
+    triggerFlash("flash-green");
 
     // Single Mode: 即クリア
-    if (gameData.mode === 'single') {
+    if (gameData.mode === "single") {
         gameOver(true);
         return;
     }
 
     // Streak Mode: 目標枚数チェック
-    if (gameData.mode === 'streak') {
+    if (gameData.mode === "streak") {
         if (gameData.panelsCleared >= gameData.targetPanels) {
             gameOver(true);
         } else {
@@ -584,38 +584,38 @@ function handleBoardClear() {
     }
 
     // Infinite Mode: 時間を加算して続行
-    if (gameData.mode === 'infinite') {
+    if (gameData.mode === "infinite") {
         gameData.remainingTime += getBonusTime(gameData.param);
         resetBoard();
     }
 }
 
 function gameOver(isWin) {
-    gameState = 'ended';
+    gameState = "ended";
     clearInterval(timerInterval);
-    document.body.classList.remove('danger');
+    document.body.classList.remove("danger");
 
-    msgOverlay.classList.remove('hidden');
+    msgOverlay.classList.remove("hidden");
 
     if (isWin) {
         msgText.textContent = "FINISHED!";
         msgText.style.color = "#0f0";
-        if (gameData.mode === 'single') {
+        if (gameData.mode === "single") {
             subMsg.textContent = `TIME: ${timerEl.textContent}`;
-        } else if (gameData.mode === 'streak') {
+        } else if (gameData.mode === "streak") {
             subMsg.textContent = `${gameData.panelsCleared} Streaks\nTIME: ${timerEl.textContent} / MISS: ${gameData.mistakes}`;
-        } else if (gameData.mode === 'infinite') {
+        } else if (gameData.mode === "infinite") {
             subMsg.textContent = `CLEARED: ${gameData.panelsCleared} / MISS: ${gameData.mistakes}`;
         }
     } else {
-        if (gameData.mode === 'infinite' && gameData.remainingTime <= 0) {
+        if (gameData.mode === "infinite" && gameData.remainingTime <= 0) {
             msgText.textContent = "FINISHED!";
             msgText.style.color = "#0f0";
             subMsg.textContent = `CLEARED: ${gameData.panelsCleared} / MISS: ${gameData.mistakes}`;
         } else {
             msgText.textContent = "GAME OVER";
             msgText.style.color = "#f00";
-            if (gameData.mode === 'single') {
+            if (gameData.mode === "single") {
                 subMsg.textContent = "PRESS SPACE TO RESTART";
             } else {
                 subMsg.textContent = `CLEARED: ${gameData.panelsCleared} / PRESS SPACE TO RESTART`;
@@ -626,8 +626,8 @@ function gameOver(isWin) {
     // 最後に爆弾全表示
     grid.forEach(row => row.forEach(c => {
         if (c.isBomb) {
-            c.element.textContent = 'X';
-            c.element.classList.add('bomb');
+            c.element.textContent = "X";
+            c.element.classList.add("bomb");
         }
     }));
 }
@@ -636,7 +636,7 @@ function gameOver(isWin) {
 function triggerFlash(className) {
     // アニメーション再発火のためのハック
     const el = gameArea;
-    el.classList.remove('flash-red', 'flash-green');
+    el.classList.remove("flash-red", "flash-green");
     void el.offsetWidth; // Reflow
     el.classList.add(className);
 }
