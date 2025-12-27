@@ -178,14 +178,13 @@ window.startGame = function (mode, param) {
     gameData.mode = mode;
     gameData.param = param;
     gameData.mistakes = 0;
-    gameData.panelsCleared = (mode === 'streak') ? 1 : 0;
+    gameData.panelsCleared = 0;
 
     // モード別初期設定
     if (mode === 'single') {
         gameData.targetPanels = 1;
     } else if (mode === 'streak') {
         gameData.targetPanels = param;
-        gameData.currentStreak = 1;
     } else if (mode === 'infinite') {
         gameData.remainingTime = getInitialTime(param);
         gameData.panelsCleared = 0;
@@ -319,7 +318,6 @@ function setupInput() {
                 panelsCleared: 0,
                 targetPanels: 0,
                 mistakes: 0,
-                currentStreak: 0,
             };
             timerEl.textContent = '00:00.000';
             timerEl.style.color = '#00ff00';
@@ -577,7 +575,6 @@ function handleBoardClear() {
     // Streak Mode: 目標枚数チェック
     if (gameData.mode === 'streak') {
         if (gameData.panelsCleared >= gameData.targetPanels) {
-            gameData.currentStreak++;
             gameOver(true);
         } else {
             resetBoard();
@@ -604,7 +601,7 @@ function gameOver(isWin) {
         if (gameData.mode === 'single') {
             subMsg.textContent = `TIME: ${timerEl.textContent}`;
         } else if (gameData.mode === 'streak') {
-            subMsg.textContent = `${gameData.currentStreak} Streaks\nTIME: ${timerEl.textContent} / MISS: ${gameData.mistakes}`;
+            subMsg.textContent = `${gameData.panelsCleared} Streaks\nTIME: ${timerEl.textContent} / MISS: ${gameData.mistakes}`;
         } else if (gameData.mode === 'infinite') {
             subMsg.textContent = `CLEARED: ${gameData.panelsCleared} / MISS: ${gameData.mistakes}`;
         }
