@@ -137,6 +137,76 @@ body {
     color: var(--text-cell);
     font-weight: 900;
     /* 数字を太く */
+    position: relative;
+}
+
+/* キー表示（Shift キー押下時のみ表示） */
+.cell::before {
+    content: attr(data-key-hint);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    pointer-events: none;
+}
+
+.cell.show-key-hints::before {
+    display: block;
+}
+
+/* 縦文字（左上） */
+.cell .key-hint-vertical {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: calc(var(--font-size-cell) * 0.5);
+    color: #666;
+    font-weight: bold;
+    pointer-events: none;
+    display: none;
+}
+
+/* 横文字（右下） */
+.cell .key-hint-horizontal {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: calc(var(--font-size-cell) * 0.5);
+    color: #666;
+    font-weight: bold;
+    pointer-events: none;
+    display: none;
+}
+
+/* 斜め線（左下から右上へ） */
+.cell .key-hint-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: none;
+}
+
+.cell .key-hint-line::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to top right, transparent 0%, #666 50%, transparent 100%);
+    transform: rotate(-45deg);
+    transform-origin: center;
+}
+
+.cell.show-key-hints .key-hint-vertical,
+.cell.show-key-hints .key-hint-horizontal,
+.cell.show-key-hints .key-hint-line {
+    display: block;
 }
 
 /* 状態変化 */
