@@ -121,6 +121,22 @@ function createGridDOM() {
             cell.classList.add("cell");
             cell.dataset.row = r;
             cell.dataset.col = c;
+            
+            // キーヒント要素の追加
+            const keyHintVertical = document.createElement("span");
+            keyHintVertical.className = "key-hint-vertical";
+            keyHintVertical.textContent = LEFT_CHARS[r];
+            cell.appendChild(keyHintVertical);
+            
+            const keyHintHorizontal = document.createElement("span");
+            keyHintHorizontal.className = "key-hint-horizontal";
+            keyHintHorizontal.textContent = RIGHT_CHARS[c];
+            cell.appendChild(keyHintHorizontal);
+            
+            const keyHintLine = document.createElement("div");
+            keyHintLine.className = "key-hint-line";
+            cell.appendChild(keyHintLine);
+            
             boardEl.appendChild(cell);
 
             rowData.push({
@@ -258,6 +274,23 @@ function resetBoard() {
         if (activeLeft.has(c.r) || activeRight.has(c.c)) {
             c.element.classList.add("highlight");
         }
+        
+        // キーヒント要素の再追加（リセット時に消えるため）
+        if (!c.element.querySelector(".key-hint-vertical")) {
+            const keyHintVertical = document.createElement("span");
+            keyHintVertical.className = "key-hint-vertical";
+            keyHintVertical.textContent = LEFT_CHARS[c.r];
+            c.element.appendChild(keyHintVertical);
+            
+            const keyHintHorizontal = document.createElement("span");
+            keyHintHorizontal.className = "key-hint-horizontal";
+            keyHintHorizontal.textContent = RIGHT_CHARS[c.c];
+            c.element.appendChild(keyHintHorizontal);
+            
+            const keyHintLine = document.createElement("div");
+            keyHintLine.className = "key-hint-line";
+            c.element.appendChild(keyHintLine);
+        }
     }));
     // タイマーの色をリセット
     timerEl.style.color = "#00ff00";
@@ -332,6 +365,15 @@ function setupInput() {
             return;
         }
 
+        // Shift キー押下でキーヒント表示
+        if (e.key === "Shift") {
+            e.preventDefault();
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.classList.add("show-key-hints");
+            });
+            return;
+        }
+
         if (gameState === "menu") {
             if (e.code === "ArrowLeft" || e.code === "ArrowRight" || e.code === "ArrowUp" || e.code === "ArrowDown" || e.code === "Space") {
                 e.preventDefault();
@@ -393,6 +435,14 @@ function setupInput() {
     });
 
     document.addEventListener("keyup", (e) => {
+        // Shift キー離したときにキーヒント非表示
+        if (e.key === "Shift") {
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.classList.remove("show-key-hints");
+            });
+            return;
+        }
+
         const key = e.key.toLowerCase();
         if (key in LEFT_KEYS) {
             const r = LEFT_KEYS[key];
@@ -476,15 +526,16 @@ function openCell(r, c) {
     cell.isOpen = true;
     cell.element.classList.add("open");
     updateHighlight(r, c);
-
+    
     if (cell.isBomb) {
         cell.element.classList.add("bomb");
         handleMistake();
         return;
     }
-
+    // 数字を表示する際に data-val 属性を設定
     if (cell.value > 0) {
         cell.element.textContent = cell.value;
+        cell.element.dataset.val = cell.value;
     } else {
         for (let dr = -1; dr <= 1; dr++) {
             for (let dc = -1; dc <= 1; dc++) {
