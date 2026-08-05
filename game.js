@@ -369,7 +369,11 @@ function setupInput() {
         if (e.key === "Shift") {
             e.preventDefault();
             document.querySelectorAll(".cell").forEach(cell => {
-                cell.classList.add("show-key-hints");
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                if (!grid[r][c].isOpen) {
+                    cell.classList.add("show-key-hints");
+                }
             });
             return;
         }
